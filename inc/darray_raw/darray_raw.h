@@ -17,11 +17,13 @@
     Main features - library is standalone and wrap or implement basic operation on arrays like:
     * create/destroy.
     * copy/clone/move/zeros/set_all.
-    * ...
+    * insert first/last/pos for unsorted arrays and insert for sorted arrays.
 */
 
 
 #include <stddef.h>
+#include <stdbool.h>
+#include <sys/types.h>
 
 
 /*
@@ -123,6 +125,99 @@ int darray_raw_zeros(void* array_p, size_t size_of, size_t length);
  * @return: 0 on success, non-zero value on failure.
  */
 int darray_raw_set_all(void* restrict array_p, size_t size_of, size_t length, const void* restrict data_p);
+
+
+/*
+ * Function insert @data_p at first position (index: 0) of @array_p for unsorted array.
+ * 
+ * @param[in] array_p - pointer to array.
+ * @param[in] size_of - size of each array member.
+ * @param[in] length  - number of elements in array.
+ * @param[in] data_p  - constant data which fill array.
+ * 
+ * @return: 0 on success, non-zero value on failure.
+ */
+int darray_raw_unsorted_insert_first(void* restrict array_p, size_t size_of, size_t length, const void* restrict data_p);
+
+
+/*
+ * Function insert @data_p at last position (index: @length - 1) of @array_p for unsorted array.
+ * 
+ * @param[in] array_p - pointer to array.
+ * @param[in] size_of - size of each array member.
+ * @param[in] length  - number of elements in array.
+ * @param[in] data_p  - constant data which fill array.
+ * 
+ * @return: 0 on success, non-zero value on failure.
+ */
+int darray_raw_unsorted_insert_last(void* restrict array_p, size_t size_of, size_t length, const void* restrict data_p);
+
+
+/*
+ * Function insert @data_p at @pos of @array_p for unsorted array.
+ * 
+ * @param[in] array_p - pointer to array.
+ * @param[in] size_of - size of each array member.
+ * @param[in] length  - number of elements in array.
+ * @param[in] pos     - array index to insert data.
+ * @param[in] data_p  - constant data which fill array.
+ * 
+ * @return: 0 on success, non-zero value on failure.
+ */
+int darray_raw_unsorted_insert_pos(void* restrict array_p, size_t size_of, size_t length, size_t pos, const void* restrict data_p);
+
+
+/*
+ * Function insert @data_p into @array_p for sorted array.
+ * 
+ * @param[in] array_p - pointer to array.
+ * @param[in] size_of - size of each array member.
+ * @param[in] length  - number of elements in array.
+ * @param[in] data_p  - constant data which fill array.
+ * @param[in] cmp_fp  - comparator function pointer.
+ * 
+ * @return: 0 on success, non-zero value on failure.
+ */
+int darray_raw_sorted_insert(void* restrict array_p, size_t size_of, size_t length, const void* restrict data_p, const compare_fp cmp_fp);
+
+
+/*
+ * Function get upper bound of @data_p from @array_p.
+ * 
+ * @param[in] array_p - pointer to array.
+ * @param[in] size_of - size of each array member.
+ * @param[in] length  - number of elements in array.
+ * @param[in] data_p  - constant data which fill array.
+ * @param[in] cmp_fp  - comparator function pointer.
+ * 
+ * @return: upper bound index on success, -1 value on failure.
+ */
+ssize_t darray_raw_upper_bound(const void* restrict array_p, size_t size_of, size_t length, const void* restrict data_p, const compare_fp cmp_fp);
+
+
+/*
+ * Function shuffle @array_p.
+ *
+ * @param[in] array_p - pointer to array.
+ * @param[in] size_of - size of each array member.
+ * @param[in] length  - number of elements in array.
+ *
+ * @return: this is void function.
+ */
+void darray_raw_shuffle(void* array_p, size_t size_of, size_t length);
+
+
+/*
+ * Function check if @array_p is sorted.
+ *
+ * @param[in] array_p - pointer to array.
+ * @param[in] size_of - size of each array member.
+ * @param[in] length  - number of elements in array.
+ * @param[in] cmp_fp  - comparator function pointer.
+ *
+ * @return: true if @array_p is sorted, false if @array_p is not sorted.
+ */
+bool darray_raw_is_sorted(const void* array_p, size_t size_of, size_t length, const compare_fp cmp_fp);
 
 
 #endif /* DARRAY_RAW_H */
