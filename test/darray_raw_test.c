@@ -1132,6 +1132,28 @@ static void test_darray_raw_shuffle(void)
 }
 
 
+static void test_darray_raw_equal(void)
+{
+    const int first_array[]  = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    const int second_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    const int third_array[]  = {1, 2, 3, 3, 5, 6, 7, 8, 9, 10};
+
+    _Static_assert(array_size(first_array) == array_size(second_array), "Array with different length");
+    _Static_assert(sizeof(*first_array) == sizeof(*second_array), "Array with different size of types");
+
+    _Static_assert(array_size(second_array) == array_size(third_array), "Array with different length");
+    _Static_assert(sizeof(*second_array) == sizeof(*third_array), "Array with different size of types");
+
+    register bool ret = false;
+
+    ret = darray_raw_equal(&first_array[0], &second_array[0], sizeof(*first_array), array_size(first_array), int_compare);
+    assert(ret == true);
+
+    ret = darray_raw_equal(&second_array[0], &third_array[0], sizeof(*second_array), array_size(second_array), int_compare);
+    assert(ret == false);
+}
+
+
 static void test_darray_raw_is_sorted(void)
 {
     register bool ret = false;
@@ -1143,6 +1165,20 @@ static void test_darray_raw_is_sorted(void)
     const int unsorted_array[] = {1, 2, 3, 44, 5, 6, 7, 8, 9, 10};
     ret = darray_raw_is_sorted(&unsorted_array[0], sizeof(*unsorted_array), array_size(unsorted_array), int_compare);
     assert(ret == false);
+}
+
+
+static void test_darray_raw_is_reverse_sorted(void)
+{
+    register bool ret = false;
+
+    const int sorted_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    ret = darray_raw_is_reverse_sorted(&sorted_array[0], sizeof(*sorted_array), array_size(sorted_array), int_compare);
+    assert(ret == false);
+
+    const int sorted_revesed_array[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    ret = darray_raw_is_reverse_sorted(&sorted_revesed_array[0], sizeof(*sorted_revesed_array), array_size(sorted_revesed_array), int_compare);
+    assert(ret == true);
 }
 
 
@@ -1174,7 +1210,9 @@ int main(void)
     test_darray_raw_delete_all_with_entries();
     test_darray_raw_upper_bound();
     test_darray_raw_shuffle();
+    test_darray_raw_equal();
     test_darray_raw_is_sorted();
+    test_darray_raw_is_reverse_sorted();
 
     return EXIT_SUCCESS;
 }

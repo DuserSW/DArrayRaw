@@ -18,6 +18,8 @@
     * create/destroy.
     * copy/clone/move/zeros/set_all.
     * insert first/last/pos for unsorted arrays and insert for sorted arrays.
+    * delete first/last/pos with/without entry for arrays.
+    * check if array is sorted/reverse sorted/equals.
 */
 
 
@@ -310,6 +312,20 @@ void darray_raw_shuffle(void* array_p, size_t size_of, size_t length);
 
 
 /*
+ * Function check if @first_array_p and @second_array_p are equals.
+ *
+ * @param[in] first_array_p  - pointer to first array to compare.
+ * @param[in] second_array_p - pointer to second array to compare.
+ * @param[in] size_of        - size of each array member.
+ * @param[in] length         - number of elements in array.
+ * @param[in] cmp_fp         - comparator function pointer.
+ *
+ * @return: true if @first_array_p and @second_array_p are equals, false if not.
+ */
+bool darray_raw_equal(const void* first_array_p, const void* second_array_p, size_t size_of, size_t length, const compare_fp cmp_fp);
+
+
+/*
  * Function check if @array_p is sorted.
  *
  * @param[in] array_p - pointer to array.
@@ -320,6 +336,19 @@ void darray_raw_shuffle(void* array_p, size_t size_of, size_t length);
  * @return: true if @array_p is sorted, false if @array_p is not sorted.
  */
 bool darray_raw_is_sorted(const void* array_p, size_t size_of, size_t length, const compare_fp cmp_fp);
+
+
+/*
+ * Function check if @array_p is reverse sorted.
+ *
+ * @param[in] array_p - pointer to array.
+ * @param[in] size_of - size of each array member.
+ * @param[in] length  - number of elements in array.
+ * @param[in] cmp_fp  - comparator function pointer.
+ *
+ * @return: true if @array_p is sorted, false if @array_p is not sorted.
+ */
+bool darray_raw_is_reverse_sorted(const void* array_p, size_t size_of, size_t length, const compare_fp cmp_fp);
 
 
 #endif /* DARRAY_RAW_H */

@@ -668,6 +668,53 @@ void darray_raw_shuffle(void* const array_p, const size_t size_of, const size_t 
 }
 
 
+bool darray_raw_equal(const void* const first_array_p, const void* const second_array_p, const size_t size_of, const size_t length, const compare_fp cmp_fp)
+{
+    if (first_array_p == NULL)
+    {
+        perror("DArrayRaw: argument first_array_p is NULL\n");
+        return false;
+    }
+
+    if (second_array_p == NULL)
+    {
+        perror("DArrayRaw: argument first_array_p is NULL\n");
+        return false;
+    }
+
+    if (size_of == 0)
+    {
+        perror("DArrayRaw: argument size_of has to small value\n");
+        return false;
+    }
+
+    if (length == 0)
+    {
+        perror("DArrayRaw: argument length has to small value\n");
+        return false;
+    }
+
+    if (cmp_fp == NULL)
+    {
+        perror("DArrayRaw: argument cmp_fp is NULL\n");
+        return false;
+    }
+
+    register const uint8_t* const first_barray_p = first_array_p;
+    register const uint8_t* const second_barray_p = second_array_p;
+
+    for (size_t offset = 0; offset < size_of * length; offset += size_of)
+    {
+        if (cmp_fp(&first_barray_p[offset], &second_barray_p[offset]) != 0)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 bool darray_raw_is_sorted(const void* const array_p, const size_t size_of, const size_t length, const compare_fp cmp_fp)
 {
     if (array_p == NULL)
@@ -699,6 +746,46 @@ bool darray_raw_is_sorted(const void* const array_p, const size_t size_of, const
     for (size_t offset = 0; offset < size_of * (length - 1); offset += size_of)
     {
         if (cmp_fp(&barray_p[offset], &barray_p[offset + size_of]) > 0)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+bool darray_raw_is_reverse_sorted(const void* const array_p, const size_t size_of, const size_t length, const compare_fp cmp_fp)
+{
+    if (array_p == NULL)
+    {
+        perror("DArrayRaw: argument array_p is NULL\n");
+        return false;
+    }
+
+    if (size_of == 0)
+    {
+        perror("DArrayRaw: argument size_of has to small value\n");
+        return false;
+    }
+
+    if (length == 0)
+    {
+        perror("DArrayRaw: argument length has to small value\n");
+        return false;
+    }
+
+    if (cmp_fp == NULL)
+    {
+        perror("DArrayRaw: argument cmp_fp is NULL\n");
+        return false;
+    }
+
+    const uint8_t* const barray_p = array_p;
+
+    for (size_t offset = 0; offset < size_of * (length - 1); offset += size_of)
+    {
+        if (cmp_fp(&barray_p[offset], &barray_p[offset + size_of]) < 0)
         {
             return false;
         }
