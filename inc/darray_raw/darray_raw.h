@@ -182,6 +182,108 @@ int darray_raw_sorted_insert(void* restrict array_p, size_t size_of, size_t leng
 
 
 /*
+ * Function delete first item from @array_p and zeros item from (@length - 1).
+ *
+ * @param[in] array_p - pointer to array.
+ * @param[in] size_of - size of each array member.
+ * @param[in] length  - number of elements in array.
+ * 
+ * @return: 0 on success, non-zero value on failure.
+ */
+int darray_raw_delete_first(void* array_p, size_t size_of, size_t length);
+
+
+/*
+ * Function delete last item from @array_p and zeros item from (@length - 1).
+ *
+ * @param[in] array_p - pointer to array.
+ * @param[in] size_of - size of each array member.
+ * @param[in] length  - number of elements in array.
+ * 
+ * @return: 0 on success, non-zero value on failure.
+ */
+int darray_raw_delete_last(void* array_p, size_t size_of, size_t length);
+
+
+/*
+ * Function delete item under @pos from @array_p and zeros item from (@length - 1).
+ *
+ * @param[in] array_p - pointer to array.
+ * @param[in] size_of - size of each array member.
+ * @param[in] length  - number of elements in array.
+ * @param[in] pos     - array index to insert data.
+ * 
+ * @return: 0 on success, non-zero value on failure.
+ */
+int darray_raw_delete_pos(void* array_p, size_t size_of, size_t length, size_t pos);
+
+
+/*
+ * Function delete all items from @array_p and zeros them.
+ *
+ * @param[in] array_p - pointer to array.
+ * @param[in] size_of - size of each array member.
+ * @param[in] length  - number of elements in array.
+ * 
+ * @return: 0 on success, non-zero value on failure.
+ */
+int darray_raw_delete_all(void* array_p, size_t size_of, size_t length);
+
+
+/*
+ * Function delete first item from @array_p, call destructor on item and zeros item from (@length - 1).
+ *
+ * @param[in] array_p    - pointer to array.
+ * @param[in] size_of    - size of each array member.
+ * @param[in] length     - number of elements in array.
+ * @param[in] destroy_fp - destructor function pointer.
+ * 
+ * @return: 0 on success, non-zero value on failure.
+ */
+int darray_raw_delete_first_with_entry(void* array_p, size_t size_of, size_t length, const destructor_fp destroy_fp);
+
+
+/*
+ * Function delete last item from @array_p, call destructor on item and zeros item from (@length - 1).
+ *
+ * @param[in] array_p    - pointer to array.
+ * @param[in] size_of    - size of each array member.
+ * @param[in] length     - number of elements in array.
+ * @param[in] destroy_fp - destructor function pointer.
+ * 
+ * @return: 0 on success, non-zero value on failure.
+ */
+int darray_raw_delete_last_with_entry(void* array_p, size_t size_of, size_t length, const destructor_fp destroy_fp);
+
+
+/*
+ * Function delete item under @pos from @array_p, call destructor on item and zeros item from (@length - 1).
+ *
+ * @param[in] array_p    - pointer to array.
+ * @param[in] size_of    - size of each array member.
+ * @param[in] length     - number of elements in array.
+ * @param[in] pos        - array index to insert data.
+ * @param[in] destroy_fp - destructor function pointer.
+ * 
+ * @return: 0 on success, non-zero value on failure.
+ */
+int darray_raw_delete_pos_with_entry(void* array_p, size_t size_of, size_t length, size_t pos, const destructor_fp destroy_fp);
+
+
+/*
+ * Function delete all items from @array_p, call destructor on each of items and zeros them.
+ *
+ * @param[in] array_p    - pointer to array.
+ * @param[in] size_of    - size of each array member.
+ * @param[in] length     - number of elements in array.
+ * @param[in] destroy_fp - destructor function pointer.
+ * 
+ * @return: 0 on success, non-zero value on failure.
+ */
+int darray_raw_delete_all_with_entries(void* array_p, size_t size_of, size_t length, const destructor_fp destroy_fp);
+
+
+/*
  * Function get upper bound of @data_p from @array_p.
  * 
  * @param[in] array_p - pointer to array.
