@@ -579,6 +579,61 @@ int darray_raw_delete_all_with_entries(void* const array_p, const size_t size_of
 }
 
 
+ssize_t darray_raw_lower_bound(const void* const restrict array_p, const size_t size_of, const size_t length, const void* const restrict data_p, const compare_fp cmp_fp)
+{
+    if (array_p == NULL)
+    {
+        perror("DArrayRaw: argument array_p is NULL\n");
+        return -1;
+    }
+
+    if (size_of == 0)
+    {
+        perror("DArrayRaw: argument size_of has to small value\n");
+        return -1;
+    }
+
+    if (length == 0)
+    {
+        perror("DArrayRaw: argument length has to small value\n");
+        return -1;
+    }
+
+    if (data_p == NULL)
+    {
+        perror("DArrayRaw: argument data_p is NULL\n");
+        return -1;
+    }
+
+    if (cmp_fp == NULL)
+    {
+        perror("DArrayRaw: argument cmp_fp is NULL\n");
+        return -1;
+    }
+
+    register const uint8_t* const restrict barray_p = array_p;
+
+    register size_t offset_left = 0;
+    register size_t offset_right = length * size_of;
+
+    while (offset_left < offset_right)
+    {
+        register const size_t offset_middle = (((offset_left / size_of) + (offset_right / size_of)) / 2) * size_of;
+
+        if (cmp_fp(data_p, &barray_p[offset_middle]) <= 0)
+        {
+            offset_right = offset_middle;
+        }
+        else
+        {
+            offset_left = offset_middle + size_of;
+        }
+    }
+
+    return (ssize_t)(offset_left / size_of);
+}
+
+
 ssize_t darray_raw_upper_bound(const void* const restrict array_p, const size_t size_of, const size_t length, const void* const restrict data_p, const compare_fp cmp_fp)
 {
     if (array_p == NULL)
@@ -631,6 +686,372 @@ ssize_t darray_raw_upper_bound(const void* const restrict array_p, const size_t 
     }
 
     return (ssize_t)(offset_left / size_of);
+}
+
+
+ssize_t darray_raw_find_min(const void* const array_p, const size_t size_of, const size_t length, const compare_fp cmp_fp, void* const out_p)
+{
+    if (array_p == NULL)
+    {
+        perror("DArrayRaw: argument array_p is NULL\n");
+        return -1;
+    }
+
+    if (size_of == 0)
+    {
+        perror("DArrayRaw: argument size_of has to small value\n");
+        return -1;
+    }
+
+    if (length == 0)
+    {
+        perror("DArrayRaw: argument length has to small value\n");
+        return -1;
+    }
+
+    if (cmp_fp == NULL)
+    {
+        perror("DArrayRaw: argument cmp_fp is NULL\n");
+        return -1;
+    }
+
+    register size_t min_offset = 0;
+    register const uint8_t* const barray_p = array_p;
+
+    for (size_t offset = size_of; offset < size_of * length; offset += size_of)
+    {
+        if (cmp_fp(&barray_p[offset], &barray_p[min_offset]) < 0)
+        {
+            min_offset = offset;
+        }
+    }
+
+    if (out_p != NULL)
+    {
+        if (memcpy(out_p, &barray_p[min_offset], size_of) != out_p)
+        {
+            perror("DArrayRaw: memcpy error\n");
+            return -1;
+        }
+    }
+
+    return (ssize_t)(min_offset / size_of);
+}
+
+
+ssize_t darray_raw_find_max(const void* const array_p, const size_t size_of, const size_t length, const compare_fp cmp_fp, void* const out_p)
+{
+    if (array_p == NULL)
+    {
+        perror("DArrayRaw: argument array_p is NULL\n");
+        return -1;
+    }
+
+    if (size_of == 0)
+    {
+        perror("DArrayRaw: argument size_of has to small value\n");
+        return -1;
+    }
+
+    if (length == 0)
+    {
+        perror("DArrayRaw: argument length has to small value\n");
+        return -1;
+    }
+
+    if (cmp_fp == NULL)
+    {
+        perror("DArrayRaw: argument cmp_fp is NULL\n");
+        return -1;
+    }
+
+    register size_t max_offset = 0;
+    register const uint8_t* const barray_p = array_p;
+
+    for (size_t offset = size_of; offset < size_of * length; offset += size_of)
+    {
+        if (cmp_fp(&barray_p[offset], &barray_p[max_offset]) > 0)
+        {
+            max_offset = offset;
+        }
+    }
+
+    if (out_p != NULL)
+    {
+        if (memcpy(out_p, &barray_p[max_offset], size_of) != out_p)
+        {
+            perror("DArrayRaw: memcpy error\n");
+            return -1;
+        }
+    }
+
+    return (ssize_t)(max_offset / size_of);
+}
+
+
+ssize_t darray_raw_unsorted_find_first(const void* const restrict array_p, const size_t size_of, const size_t length, 
+                                       const void* const restrict key_p, const compare_fp cmp_fp, void* const out_p)
+{
+    if (array_p == NULL)
+    {
+        perror("DArrayRaw: argument array_p is NULL\n");
+        return -1;
+    }
+
+    if (size_of == 0)
+    {
+        perror("DArrayRaw: argument size_of has to small value\n");
+        return -1;
+    }
+
+    if (length == 0)
+    {
+        perror("DArrayRaw: argument length has to small value\n");
+        return -1;
+    }
+
+    if (key_p == NULL)
+    {
+        perror("DArrayRaw: argument key_p is NULL\n");
+        return -1;
+    }
+
+    if (cmp_fp == NULL)
+    {
+        perror("DArrayRaw: argument cmp_fp is NULL\n");
+        return -1;
+    }
+
+    register ssize_t first_occurrence_index = -1;
+    register const uint8_t* const restrict barray_p = array_p;
+
+    for (size_t offset = 0; offset < size_of * length; offset += size_of)
+    {
+        if (cmp_fp(&barray_p[offset], key_p) == 0)
+        {
+            first_occurrence_index = (ssize_t)(offset / size_of); 
+            break;
+        }
+    }
+
+    if (first_occurrence_index == -1)
+    {
+        return -1;
+    }
+
+    if (out_p != NULL)
+    {
+        if (memcpy(out_p, &barray_p[(size_t)first_occurrence_index * size_of], size_of) != out_p)
+        {
+            perror("DArrayRaw: memcpy error\n");
+            return -1;
+        }
+    }
+
+    return first_occurrence_index;
+}
+
+
+ssize_t darray_raw_unsorted_find_last(const void* const restrict array_p, const size_t size_of, const size_t length, 
+                                      const void* const restrict key_p, const compare_fp cmp_fp, void* const out_p)
+{
+    if (array_p == NULL)
+    {
+        perror("DArrayRaw: argument array_p is NULL\n");
+        return -1;
+    }
+
+    if (size_of == 0)
+    {
+        perror("DArrayRaw: argument size_of has to small value\n");
+        return -1;
+    }
+
+    if (length == 0)
+    {
+        perror("DArrayRaw: argument length has to small value\n");
+        return -1;
+    }
+
+    if (key_p == NULL)
+    {
+        perror("DArrayRaw: argument key_p is NULL\n");
+        return -1;
+    }
+
+    if (cmp_fp == NULL)
+    {
+        perror("DArrayRaw: argument cmp_fp is NULL\n");
+        return -1;
+    }
+
+    register ssize_t last_occurrence_index = -1;
+    register const uint8_t* const restrict barray_p = array_p;
+
+    for (ssize_t offset = (ssize_t)(size_of * (length - 1)); offset >= 0; offset -= (ssize_t)size_of)
+    {
+        if (cmp_fp(&barray_p[offset], key_p) == 0)
+        {
+            last_occurrence_index = offset / (ssize_t)size_of; 
+            break;
+        }
+    }
+
+    if (last_occurrence_index == -1)
+    {
+        return -1;
+    }
+
+    if (out_p != NULL)
+    {
+        if (memcpy(out_p, &barray_p[(size_t)last_occurrence_index * size_of], size_of) != out_p)
+        {
+            perror("DArrayRaw: memcpy error\n");
+            return -1;
+        }
+    }
+
+    return last_occurrence_index;
+}
+
+
+ssize_t darray_raw_sorted_find_first(const void* const restrict array_p, const size_t size_of, const size_t length, 
+                                     const void* const restrict key_p, const compare_fp cmp_fp, void* const out_p)
+{
+    if (array_p == NULL)
+    {
+        perror("DArrayRaw: argument array_p is NULL\n");
+        return -1;
+    }
+
+    if (size_of == 0)
+    {
+        perror("DArrayRaw: argument size_of has to small value\n");
+        return -1;
+    }
+
+    if (length == 0)
+    {
+        perror("DArrayRaw: argument length has to small value\n");
+        return -1;
+    }
+
+    if (key_p == NULL)
+    {
+        perror("DArrayRaw: argument key_p is NULL\n");
+        return -1;
+    }
+
+    if (cmp_fp == NULL)
+    {
+        perror("DArrayRaw: argument cmp_fp is NULL\n");
+        return -1;
+    }
+
+    register size_t left_offset = 0;
+    register size_t right_offset = (length - 1) * size_of;
+
+    register const uint8_t* const restrict barray_p = array_p;
+
+    while (left_offset < right_offset)
+    {
+        register const size_t middle_offset = (((left_offset / size_of) + (right_offset / size_of)) / 2) * size_of;
+
+        if (cmp_fp(&barray_p[middle_offset], key_p) < 0)
+        {
+            left_offset = middle_offset + size_of;
+        }
+        else
+        {
+            right_offset = middle_offset;
+        }
+    }
+
+    if (cmp_fp(&barray_p[left_offset], key_p) == 0)
+    {
+        if (out_p != NULL)
+        {
+            if (memcpy(out_p, &barray_p[left_offset], size_of) != out_p)
+            {
+                perror("DArrayRaw: memcpy error\n");
+                return -1;
+            }
+        }
+
+        return (ssize_t)(left_offset / size_of);
+    }
+
+    return -1;
+}
+
+
+ssize_t darray_raw_sorted_find_last(const void* const restrict array_p, const size_t size_of, const size_t length, 
+                                    const void* const restrict key_p, const compare_fp cmp_fp, void* const out_p)
+{
+    if (array_p == NULL)
+    {
+        perror("DArrayRaw: argument array_p is NULL\n");
+        return -1;
+    }
+
+    if (size_of == 0)
+    {
+        perror("DArrayRaw: argument size_of has to small value\n");
+        return -1;
+    }
+
+    if (length == 0)
+    {
+        perror("DArrayRaw: argument length has to small value\n");
+        return -1;
+    }
+
+    if (key_p == NULL)
+    {
+        perror("DArrayRaw: argument key_p is NULL\n");
+        return -1;
+    }
+
+    if (cmp_fp == NULL)
+    {
+        perror("DArrayRaw: argument cmp_fp is NULL\n");
+        return -1;
+    }
+
+    register size_t left_offset = 0;
+    register size_t right_offset = (length - 1) * size_of;
+
+    register const uint8_t* const restrict barray_p = array_p;
+
+    while (left_offset < right_offset)
+    {
+        register const size_t middle_offset = (((left_offset / size_of) + (right_offset / size_of) + 1) / 2) * size_of;
+
+        if (cmp_fp(&barray_p[middle_offset], key_p) > 0)
+        {
+            right_offset = middle_offset - size_of;
+        }
+        else
+        {
+            left_offset = middle_offset;
+        }
+    }
+
+    if (cmp_fp(&barray_p[left_offset], key_p) == 0)
+    {
+        if (out_p != NULL)
+        {
+            if (memcpy(out_p, &barray_p[left_offset], size_of) != out_p)
+            {
+                perror("DArrayRaw: memcpy error\n");
+                return -1;
+            }
+        }
+
+        return (ssize_t)(left_offset / size_of);
+    }
+
+    return -1;
 }
 
 

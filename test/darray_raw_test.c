@@ -324,6 +324,9 @@ static void test_darray_raw_unsorted_insert_first(void)
         {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
     };
 
+    _Static_assert(sizeof(*array_to_insert) == sizeof(*array_to_expect[0]), "Different types of arrays");
+    _Static_assert(array_size(array_to_insert) == array_size(array_to_expect[0]), "Different length of arrays");
+
     for (size_t i = 0; i < length; ++i)
     {
         register int ret = -1;
@@ -367,6 +370,9 @@ static void test_darray_raw_unsorted_insert_last(void)
         {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
     };
 
+    _Static_assert(sizeof(*array_to_insert) == sizeof(*array_to_expect[0]), "Different types of arrays");
+    _Static_assert(array_size(array_to_insert) == array_size(array_to_expect[0]), "Different length of arrays");
+
     for (size_t i = 0; i < length; ++i)
     {
         register int ret = -1;
@@ -395,19 +401,8 @@ static void test_darray_raw_unsorted_insert_pos(void)
         assert(array_p[i] == 0);
     }
 
-    // 11,
-    // 11, 99,
-    // 11, 22, 99,
-    // 11, 22, 99, 100,
-    // 11, 22, 55, 99, 100,
-    // 11, 22, 33, 55, 99, 100
-    // 11, 22, 33, 55, 77, 99, 100
-    // 11, 22, 33, 44, 55, 77, 99, 100
-    // 11, 22, 33, 44, 55, 77, 88, 99, 100
-    // 11, 22, 33, 44, 55, 66, 77, 88, 99, 100
     const int array_to_insert[] = {11, 99, 22, 100, 55, 33, 77, 44, 88, 66};
     const size_t indexes_to_insert[] = {0, 1, 1, 3, 2, 2, 4, 3, 6, 5};
-
     const int array_to_expect[][10] = 
     {
         {11,  0,  0,   0,   0,   0,   0,   0,   0,   0},
@@ -421,6 +416,11 @@ static void test_darray_raw_unsorted_insert_pos(void)
         {11, 22, 33,  44,  55,  77,  88,  99, 100,   0},
         {11, 22, 33,  44,  55,  66,  77,  88,  99, 100},
     };
+
+    _Static_assert(sizeof(*array_to_insert) == sizeof(*array_to_expect[0]), "Different types of arrays");
+
+    _Static_assert(array_size(array_to_insert) == array_size(indexes_to_insert), "Different length of arrays");
+    _Static_assert(array_size(indexes_to_insert) == array_size(array_to_expect[0]), "Different length of arrays");
 
     for (size_t i = 0; i < length; ++i)
     {
@@ -490,6 +490,9 @@ static void test_darray_raw_unsorted_insert_first_with_entry(void)
         {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
     };
 
+    _Static_assert(sizeof(*array_key_to_insert) == sizeof(*array_key_to_expect[0]), "Different types of arrays");
+    _Static_assert(array_size(array_key_to_insert) == array_size(array_key_to_expect[0]), "Different length of arrays");
+
     for (size_t i = 0; i < length; ++i)
     {
         const MyStructS* const tmp_p = mystruct_create(array_key_to_insert[i], i + 1, i + 2, i + 3);
@@ -531,6 +534,9 @@ static void test_darray_raw_unsorted_insert_last_with_entry(void)
         {1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
     };
 
+    _Static_assert(sizeof(*array_key_to_insert) == sizeof(*array_key_to_expect[0]), "Different types of arrays");
+    _Static_assert(array_size(array_key_to_insert) == array_size(array_key_to_expect[0]), "Different length of arrays");
+
     for (size_t i = 0; i < length; ++i)
     {        
         const MyStructS* const tmp_p = mystruct_create(array_key_to_insert[i], i + 1, i + 2, i + 3);
@@ -557,19 +563,8 @@ static void test_darray_raw_unsorted_insert_pos_with_entry(void)
     MyStructS** mystruct_pp = darray_raw_create(size_of, length);
     assert(mystruct_pp != NULL);
 
-    // 11,
-    // 11, 99,
-    // 11, 22, 99,
-    // 11, 22, 99, 100,
-    // 11, 22, 55, 99, 100,
-    // 11, 22, 33, 55, 99, 100
-    // 11, 22, 33, 55, 77, 99, 100
-    // 11, 22, 33, 44, 55, 77, 99, 100
-    // 11, 22, 33, 44, 55, 77, 88, 99, 100
-    // 11, 22, 33, 44, 55, 66, 77, 88, 99, 100
     const size_t array_key_to_insert[] = {11, 99, 22, 100, 55, 33, 77, 44, 88, 66};
     const size_t indexes_key_to_insert[] = {0, 1, 1, 3, 2, 2, 4, 3, 6, 5};
-
     const size_t array_key_to_expect[][10] = 
     {
         {11,  0,  0,   0,   0,   0,   0,   0,   0,   0},
@@ -583,6 +578,12 @@ static void test_darray_raw_unsorted_insert_pos_with_entry(void)
         {11, 22, 33,  44,  55,  77,  88,  99, 100,   0},
         {11, 22, 33,  44,  55,  66,  77,  88,  99, 100},
     };
+
+    _Static_assert(sizeof(*array_key_to_insert) == sizeof(*indexes_key_to_insert), "Different types of arrays");
+    _Static_assert(sizeof(*indexes_key_to_insert) == sizeof(*array_key_to_expect[0]), "Different types of arrays");
+
+    _Static_assert(array_size(array_key_to_insert) == array_size(indexes_key_to_insert), "Different length of arrays");
+    _Static_assert(array_size(indexes_key_to_insert) == array_size(array_key_to_expect[0]), "Different length of arrays");
 
     for (size_t i = 0; i < length; ++i)
     {        
@@ -803,6 +804,8 @@ static void test_darray_raw_delete_pos(void)
     const int array_to_insert[] = {11, 99, 22, 100, 55, 33, 77, 44, 88, 66};
     const size_t indexes_to_insert[] = {0, 1, 1, 3, 2, 2, 4, 3, 6, 5};
 
+    _Static_assert(array_size(array_to_insert) == array_size(indexes_to_insert), "Different length of arrays");
+
     for (size_t i = 0; i < length; ++i)
     {        
         register const int ret = darray_raw_unsorted_insert_pos(array_p, size_of, length, indexes_to_insert[i], &array_to_insert[i]);
@@ -823,6 +826,8 @@ static void test_darray_raw_delete_pos(void)
         { 55,  0,  0,   0,   0,   0,   0,   0,   0,   0 },
         {  0,  0,  0,   0,   0,   0,   0,   0,   0,   0 },
     };
+
+    _Static_assert(array_size(indexes_to_delete) == array_size(array_to_expect[0]), "Different length of arrays");
 
     for (size_t i = 0; i < length; ++i)
     {
@@ -981,6 +986,9 @@ static void test_darray_raw_delete_pos_with_entry(void)
     const size_t array_key_to_insert[] = {11, 99, 22, 100, 55, 33, 77, 44, 88, 66};
     const size_t indexes_key_to_insert[] = {0, 1, 1, 3, 2, 2, 4, 3, 6, 5};
 
+    _Static_assert(sizeof(*array_key_to_insert) == sizeof(*indexes_key_to_insert), "Different types of arrays");
+    _Static_assert(array_size(array_key_to_insert) == array_size(indexes_key_to_insert), "Different length of arrays");
+
     for (size_t i = 0; i < length; ++i)
     {        
         const MyStructS* const tmp_p = mystruct_create(array_key_to_insert[i], i + 1, i + 2, i + 3);
@@ -1004,6 +1012,9 @@ static void test_darray_raw_delete_pos_with_entry(void)
         { 55,  0,  0,   0,   0,   0,   0,   0,   0,   0 },
         {  0,  0,  0,   0,   0,   0,   0,   0,   0,   0 },
     };
+
+    _Static_assert(sizeof(*indexes_to_delete) == sizeof(*array_key_to_expect[0]), "Different types of arrays");
+    _Static_assert(array_size(indexes_to_delete) == array_size(array_key_to_expect[0]), "Different length of arrays");
 
     for (size_t i = 0; i < length; ++i)
     {        
@@ -1051,6 +1062,51 @@ static void test_darray_raw_delete_all_with_entries(void)
 }
 
 
+static void test_darray_raw_lower_bound(void)
+{
+    const int array[] = {0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144};
+
+    register ssize_t lower_bound_index = -1;
+    int search_key = 0;
+
+    search_key = -1;
+    lower_bound_index = darray_raw_lower_bound(&array[0], sizeof(*array), array_size(array), &search_key, int_compare);
+    assert(lower_bound_index == 0);
+
+    search_key = 0;
+    lower_bound_index = darray_raw_lower_bound(&array[0], sizeof(*array), array_size(array), &search_key, int_compare);
+    assert(lower_bound_index == 0);
+
+    search_key = 1;
+    lower_bound_index = darray_raw_lower_bound(&array[0], sizeof(*array), array_size(array), &search_key, int_compare);
+    assert(lower_bound_index == 1);
+
+    search_key = 4;
+    lower_bound_index = darray_raw_lower_bound(&array[0], sizeof(*array), array_size(array), &search_key, int_compare);
+    assert(lower_bound_index == 5);
+
+    search_key = 13;
+    lower_bound_index = darray_raw_lower_bound(&array[0], sizeof(*array), array_size(array), &search_key, int_compare);
+    assert(lower_bound_index == 7);
+
+    search_key = 52;
+    lower_bound_index = darray_raw_lower_bound(&array[0], sizeof(*array), array_size(array), &search_key, int_compare);
+    assert(lower_bound_index == 10);
+
+    search_key = 79;
+    lower_bound_index = darray_raw_lower_bound(&array[0], sizeof(*array), array_size(array), &search_key, int_compare);
+    assert(lower_bound_index == 11);
+
+    search_key = 144;
+    lower_bound_index = darray_raw_lower_bound(&array[0], sizeof(*array), array_size(array), &search_key, int_compare);
+    assert(lower_bound_index == 12);
+
+    search_key = 223;
+    lower_bound_index = darray_raw_lower_bound(&array[0], sizeof(*array), array_size(array), &search_key, int_compare);
+    assert(lower_bound_index == 13);
+}
+
+
 static void test_darray_raw_upper_bound(void)
 {
     const int array[] = {0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144};
@@ -1093,6 +1149,348 @@ static void test_darray_raw_upper_bound(void)
     search_key = 223;
     upper_bound_index = darray_raw_upper_bound(&array[0], sizeof(*array), array_size(array), &search_key, int_compare);
     assert(upper_bound_index == 13);
+}
+
+
+static void test_darray_raw_find_min(void)
+{
+    const int array[] = {5, 4, 3, 2, 1, 0, -1, -1, 0, 1, 2, 3, 4, 5};
+
+    int out = -1;
+    register ssize_t min_index = -1;
+    
+    min_index = darray_raw_find_min(&array[0], sizeof(*array), array_size(array), int_compare, &out);
+    assert(min_index == 6);
+    assert(out == -1);
+
+    min_index = -1;
+    min_index = darray_raw_find_min(&array[0], sizeof(*array), array_size(array), int_compare, NULL);
+    assert(min_index == 6);
+}
+
+
+static void test_darray_raw_find_max(void)
+{
+    const int array[] = {5, 4, 3, 2, 1, 0, -1, -1, 0, 1, 2, 3, 4, 5};
+
+    int out = -1;
+    register ssize_t max_index = -1;
+    
+    max_index = darray_raw_find_max(&array[0], sizeof(*array), array_size(array), int_compare, &out);
+    assert(max_index == 0);
+    assert(out == 5);
+
+    max_index = -1;
+    max_index = darray_raw_find_max(&array[0], sizeof(*array), array_size(array), int_compare, NULL);
+    assert(max_index == 0);
+}
+
+
+static void test_darray_raw_unsorted_find_first(void)
+{
+    const int array[] = {8, 6, 6, 3, 7, 7, 7, 2, 1, 1, 1, 1, 10, 3, 4, 9, 9, 5, 5, 5, 8};
+
+    register const bool is_sorted = darray_raw_is_sorted(&array[0], sizeof(*array), array_size(array), int_compare);
+    assert(is_sorted == false);
+
+    int out = -1;
+    int search_key = -1;
+    register ssize_t first_index = -1;
+
+    search_key = 0;
+    first_index = darray_raw_unsorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == -1);
+    assert(out == -1);
+
+    search_key = 1;
+    first_index = darray_raw_unsorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 8);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 2;
+    first_index = darray_raw_unsorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 7);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 3;
+    first_index = darray_raw_unsorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 3);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 4;
+    first_index = darray_raw_unsorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 14);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 5;
+    first_index = darray_raw_unsorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 17);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 6;
+    first_index = darray_raw_unsorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 1);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 7;
+    first_index = darray_raw_unsorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 4);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 8;
+    first_index = darray_raw_unsorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 0);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 9;
+    first_index = darray_raw_unsorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 15);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 10;
+    first_index = darray_raw_unsorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, NULL);
+    assert(first_index == 12);
+    assert(array[first_index] == search_key);
+}
+
+
+static void test_darray_raw_unsorted_find_last(void)
+{
+    const int array[] = {8, 6, 6, 3, 7, 7, 7, 2, 1, 1, 1, 1, 10, 3, 4, 9, 9, 5, 5, 5, 8};
+
+    register const bool is_sorted = darray_raw_is_sorted(&array[0], sizeof(*array), array_size(array), int_compare);
+    assert(is_sorted == false);
+
+    int out = -1;
+    int search_key = -1;
+    register ssize_t last_index = -1;
+
+    search_key = 0;
+    last_index = darray_raw_unsorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == -1);
+    assert(out == -1);
+
+    search_key = 1;
+    last_index = darray_raw_unsorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 11);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 2;
+    last_index = darray_raw_unsorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 7);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 3;
+    last_index = darray_raw_unsorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 13);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 4;
+    last_index = darray_raw_unsorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 14);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 5;
+    last_index = darray_raw_unsorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 19);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 6;
+    last_index = darray_raw_unsorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 2);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 7;
+    last_index = darray_raw_unsorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 6);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 8;
+    last_index = darray_raw_unsorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 20);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 9;
+    last_index = darray_raw_unsorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 16);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 10;
+    last_index = darray_raw_unsorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, NULL);
+    assert(last_index == 12);
+    assert(array[last_index] == search_key);
+}
+
+
+static void test_darray_raw_sorted_find_first(void)
+{
+    const int array[] = {1, 2, 2, 3, 3, 4, 5, 5, 5, 6, 7, 7, 7, 7, 8, 9, 9, 10};
+
+    register const bool is_sorted = darray_raw_is_sorted(&array[0], sizeof(*array), array_size(array), int_compare);
+    assert(is_sorted == true);
+
+    int out = -1;
+    int search_key = -1;
+    register ssize_t first_index = -1;
+
+    search_key = 0;
+    first_index = darray_raw_sorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == -1);
+    assert(out == -1);
+
+    search_key = 1;
+    first_index = darray_raw_sorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 0);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+    
+    search_key = 2;
+    first_index = darray_raw_sorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 1);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 3;
+    first_index = darray_raw_sorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 3);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 4;
+    first_index = darray_raw_sorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 5);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 5;
+    first_index = darray_raw_sorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 6);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 6;
+    first_index = darray_raw_sorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 9);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 7;
+    first_index = darray_raw_sorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 10);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 8;
+    first_index = darray_raw_sorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 14);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 9;
+    first_index = darray_raw_sorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(first_index == 15);
+    assert(out == search_key);
+    assert(out == array[first_index]);
+
+    search_key = 10;
+    first_index = darray_raw_sorted_find_first(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, NULL);
+    assert(first_index == 17);
+    assert(array[first_index] == search_key);
+}
+
+
+static void test_darray_raw_sorted_find_last(void)
+{
+    const int array[] = {1, 2, 2, 3, 3, 4, 5, 5, 5, 6, 7, 7, 7, 7, 8, 9, 9, 10};
+
+    register const bool is_sorted = darray_raw_is_sorted(&array[0], sizeof(*array), array_size(array), int_compare);
+    assert(is_sorted == true);
+
+    int out = -1;
+    int search_key = -1;
+    register ssize_t last_index = -1;
+
+    search_key = 0;
+    last_index = darray_raw_sorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == -1);
+    assert(out == -1);
+
+    search_key = 1;
+    last_index = darray_raw_sorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 0);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+    
+    search_key = 2;
+    last_index = darray_raw_sorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 2);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 3;
+    last_index = darray_raw_sorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 4);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 4;
+    last_index = darray_raw_sorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 5);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 5;
+    last_index = darray_raw_sorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 8);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 6;
+    last_index = darray_raw_sorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 9);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 7;
+    last_index = darray_raw_sorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 13);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 8;
+    last_index = darray_raw_sorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 14);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 9;
+    last_index = darray_raw_sorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, &out);
+    assert(last_index == 16);
+    assert(out == search_key);
+    assert(out == array[last_index]);
+
+    search_key = 10;
+    last_index = darray_raw_sorted_find_last(&array[0], sizeof(*array), array_size(array), &search_key, int_compare, NULL);
+    assert(last_index == 17);
+    assert(array[last_index] == search_key);
 }
 
 
@@ -1208,7 +1606,14 @@ int main(void)
     test_darray_raw_delete_last_with_entry();
     test_darray_raw_delete_pos_with_entry();
     test_darray_raw_delete_all_with_entries();
+    test_darray_raw_lower_bound();
     test_darray_raw_upper_bound();
+    test_darray_raw_find_min();
+    test_darray_raw_find_max();
+    test_darray_raw_unsorted_find_first();
+    test_darray_raw_unsorted_find_last();
+    test_darray_raw_sorted_find_first();
+    test_darray_raw_sorted_find_last();
     test_darray_raw_shuffle();
     test_darray_raw_equal();
     test_darray_raw_is_sorted();

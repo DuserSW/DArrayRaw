@@ -20,6 +20,9 @@
     * insert first/last/pos for unsorted arrays and insert for sorted arrays.
     * delete first/last/pos with/without entry for arrays.
     * check if array is sorted/reverse sorted/equals.
+    * find lower/upper bound for sorted arrays.
+    * find min/max for arrays.
+    * find first/last for sorted/unsorted arrays.
 */
 
 
@@ -286,6 +289,20 @@ int darray_raw_delete_all_with_entries(void* array_p, size_t size_of, size_t len
 
 
 /*
+ * Function get lower bound of @data_p from @array_p.
+ * 
+ * @param[in] array_p - pointer to array.
+ * @param[in] size_of - size of each array member.
+ * @param[in] length  - number of elements in array.
+ * @param[in] data_p  - constant data which fill array.
+ * @param[in] cmp_fp  - comparator function pointer.
+ * 
+ * @return: lower bound index on success, -1 value on failure.
+ */
+ssize_t darray_raw_lower_bound(const void* restrict array_p, size_t size_of, size_t length, const void* restrict data_p, const compare_fp cmp_fp);
+
+
+/*
  * Function get upper bound of @data_p from @array_p.
  * 
  * @param[in] array_p - pointer to array.
@@ -297,6 +314,100 @@ int darray_raw_delete_all_with_entries(void* array_p, size_t size_of, size_t len
  * @return: upper bound index on success, -1 value on failure.
  */
 ssize_t darray_raw_upper_bound(const void* restrict array_p, size_t size_of, size_t length, const void* restrict data_p, const compare_fp cmp_fp);
+
+
+/*
+ * Function find minimum value from @array_p.
+ * Value under found index will be copy into @out_p if not NULL.
+ * 
+ * @param[in]  array_p - pointer to array.
+ * @param[in]  size_of - size of each array member.
+ * @param[in]  length  - number of elements in array.
+ * @param[in]  cmp_fp  - comparator function pointer.
+ * @param[out] out_p   - copy found value if not NULL.
+ * 
+ * @return: minimum value index on success, -1 value on failure.
+ */
+ssize_t darray_raw_find_min(const void* array_p, size_t size_of, size_t length, const compare_fp cmp_fp, void* out_p);
+
+
+/*
+ * Function find maximum value from @array_p.
+ * Value under found index will be copy into @out_p if not NULL.
+ * 
+ * @param[in]  array_p - pointer to array.
+ * @param[in]  size_of - size of each array member.
+ * @param[in]  length  - number of elements in array.
+ * @param[in]  cmp_fp  - comparator function pointer.
+ * @param[out] out_p   - copy found value if not NULL.
+ * 
+ * @return: maximum value index on success, -1 value on failure.
+ */
+ssize_t darray_raw_find_max(const void* array_p, size_t size_of, size_t length, const compare_fp cmp_fp, void* out_p);
+
+
+/*
+ * Function find first occurrence of @key_p in unsorted @array_p. 
+ * Value under found index will be copy into @out_p if not NULL.
+ * 
+ * @param[in]  array_p - pointer to array.
+ * @param[in]  size_of - size of each array member.
+ * @param[in]  length  - number of elements in array.
+ * @param[in]  key_p   - search first key from array.
+ * @param[in]  cmp_fp  - comparator function pointer.
+ * @param[out] out_p   - copy found value if not NULL.
+ * 
+ * @return: index of first occurrence on success, -1 value on failure.
+ */
+ssize_t darray_raw_unsorted_find_first(const void* restrict array_p, size_t size_of, size_t length, const void* restrict key_p, const compare_fp cmp_fp, void* out_p);
+
+
+/*
+ * Function last occurrence of @key_p in unsorted @array_p. 
+ * Value under found index will be copy into @out_p if not NULL.
+ * 
+ * @param[in]  array_p - pointer to array.
+ * @param[in]  size_of - size of each array member.
+ * @param[in]  length  - number of elements in array.
+ * @param[in]  key_p   - search last key from array.
+ * @param[in]  cmp_fp  - comparator function pointer.
+ * @param[out] out_p   - copy found value if not NULL.
+ * 
+ * @return: index of last occurrence on success, -1 value on failure.
+ */
+ssize_t darray_raw_unsorted_find_last(const void* restrict array_p, size_t size_of, size_t length, const void* restrict key_p, const compare_fp cmp_fp, void* out_p);
+
+
+/*
+ * Function find first occurrence of @key_p in sorted @array_p. 
+ * Value under found index will be copy into @out_p if not NULL.
+ * 
+ * @param[in]  array_p - pointer to array.
+ * @param[in]  size_of - size of each array member.
+ * @param[in]  length  - number of elements in array.
+ * @param[in]  key_p   - search first key from array.
+ * @param[in]  cmp_fp  - comparator function pointer.
+ * @param[out] out_p   - copy found value if not NULL.
+ * 
+ * @return: index of first occurrence on success, -1 value on failure.
+ */
+ssize_t darray_raw_sorted_find_first(const void* restrict array_p, size_t size_of, size_t length, const void* restrict key_p, const compare_fp cmp_fp, void* out_p);
+
+
+/*
+ * Function last occurrence of @key_p in sorted @array_p. 
+ * Value under found index will be copy into @out_p if not NULL.
+ * 
+ * @param[in]  array_p - pointer to array.
+ * @param[in]  size_of - size of each array member.
+ * @param[in]  length  - number of elements in array.
+ * @param[in]  key_p   - search last key from array.
+ * @param[in]  cmp_fp  - comparator function pointer.
+ * @param[out] out_p   - copy found value if not NULL.
+ * 
+ * @return: index of last occurrence on success, -1 value on failure.
+ */
+ssize_t darray_raw_sorted_find_last(const void* restrict array_p, size_t size_of, size_t length, const void* restrict key_p, const compare_fp cmp_fp, void* out_p);
 
 
 /*
@@ -346,7 +457,7 @@ bool darray_raw_is_sorted(const void* array_p, size_t size_of, size_t length, co
  * @param[in] length  - number of elements in array.
  * @param[in] cmp_fp  - comparator function pointer.
  *
- * @return: true if @array_p is sorted, false if @array_p is not sorted.
+ * @return: true if @array_p is reverse sorted, false if @array_p is not reverse sorted.
  */
 bool darray_raw_is_reverse_sorted(const void* array_p, size_t size_of, size_t length, const compare_fp cmp_fp);
 
