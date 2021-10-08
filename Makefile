@@ -52,6 +52,7 @@ endif
 SDIR := ./src
 IDIR := ./inc
 TDIR := ./test
+SCRIPT_DIR := ./scripts
 
 
 # Files
@@ -85,6 +86,7 @@ GGDB :=
 ifeq ($(CC),clang)
 	C_WARN += -Weverything -Wno-padded -Wno-vla
 else ifneq (, $(filter $(CC), cc gcc))
+	C_OPT += -no-pie
 	C_WARN += -Wall -Wextra -pedantic -Wcast-align \
 			  -Winit-self -Wlogical-op -Wmissing-include-dirs \
 			  -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wundef  \
@@ -135,6 +137,9 @@ $(TEXEC): $(TOBJ)
 %.o:%.c
 	$(call print_cc,$<)
 	$(Q)$(CC) $(C_FLAGS) $(H_INC) -c $< -o $@
+
+install:
+	$(Q)$(SCRIPT_DIR)/install_darray_raw.sh $(INSTALL_PATH)
 
 clean:
 	$(call print_rm,EXEC)
