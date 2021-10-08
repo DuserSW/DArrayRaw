@@ -4,6 +4,11 @@
 # Shell commands
 RM := rm -rf
 AR := ar rcs
+GREP := grep -wq
+VALGRIND := valgrind --leak-check=full
+
+# Valgrind memory check passed string
+NO_MEM_LEAKS_STRING := All heap blocks were freed -- no leaks are possible
 
 
 # Pretty print functions
@@ -23,6 +28,17 @@ define print_ar
 	$(if $(Q), @echo "[AR]        $(1)")
 endef
 
+define print_memcheck
+	$(if $(Q), @echo "[MEMCHECK]  $(1)")
+endef
+
+define print_passed
+	echo "\033[0;32m[PASSED]\033[0m"
+endef
+
+define print_failed
+	echo "\033[0;31m[FAILED]\033[0m"
+endef
 
 # (Quiet or Verbose mode) type make V=1 to enable verbose mode
 ifeq ("$(origin V)", "command line")
@@ -127,18 +143,23 @@ clean:
 	$(call print_rm,OBJ)
 	$(Q)$(RM) $(OBJ)
 
+memcheck:
+	$(call print_memcheck,$(TEXEC))
+	$(Q)($(VALGRIND) ./$(TEXEC) 2>&1 | $(GREP) "$(NO_MEM_LEAKS_STRING)" && $(call print_passed)) || $(call print_failed)
+
 help:
-	@echo "***************************************************************"
-	@echo "* DArrayRaw Makefile options:                                 *"
-	@echo "*                                                             *"
-	@echo "*    all     - build dlogger with tests as examples           *"
-	@echo "*    lib     - build only dlogger library                     *"
-	@echo "*    test    - build only test as examples                    *"
-	@echo "*    install - install DLogger on default or specified path   *"
-	@echo "*    clean   - remove all necessary files                     *"
-	@echo "*                                                             *"
-	@echo "* Makefile supports Verbose mode when V=1                     *"
-	@echo "* Makefile supports Debug mode when DEBUG=1                   *"
-	@echo "* Makefile support two compilers: gcc and clang               *"
-	@echo "* To change compiler, type CC variable (e.g. export CC=clang) *"
-	@echo "***************************************************************"
+	@echo "****************************************************************"
+	@echo "* DArrayRaw Makefile options:                                  *"
+	@echo "*                                                              *"
+	@echo "*    all      - build dlogger with tests as examples           *"
+	@echo "*    lib      - build only dlogger library                     *"
+	@echo "*    test     - build only test as examples                    *"
+	@echo "*    install  - install DArrayRaw on default or specified path *"
+	@echo "*    clean    - remove all necessary files                     *"
+	@echo "*    memcheck - check for memory leaks                         *"
+	@echo "*                                                              *"
+	@echo "* Makefile supports Verbose mode when V=1                      *"
+	@echo "* Makefile supports Debug mode when DEBUG=1                    *"
+	@echo "* Makefile support two compilers: gcc and clang                *"
+	@echo "* To change compiler, type CC variable (e.g. export CC=clang)  *"
+	@echo "****************************************************************"
