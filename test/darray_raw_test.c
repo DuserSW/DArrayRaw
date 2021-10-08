@@ -1494,6 +1494,37 @@ static void test_darray_raw_sorted_find_last(void)
 }
 
 
+static void test_darray_raw_sort(void)
+{
+    register const size_t size_of = sizeof(int);
+    register const size_t length = 1000;
+
+    int* array_p = darray_raw_create(size_of, length);
+    assert(array_p != NULL);
+
+    /* first test with shuffle array */
+    for (size_t i = 0; i < length; ++i)
+    {
+        array_p[i] = (int)(i + 1);
+    }
+
+    darray_raw_shuffle(&array_p[0], size_of, length);
+    darray_raw_sort(&array_p[0], size_of, length, int_compare);
+    assert(darray_raw_is_sorted(&array_p[0], size_of, length, int_compare) == true);
+
+    /* second test with worst-case */
+    for (size_t i = 0; i < length; ++i)
+    {
+        array_p[i] = (int)(length - i);
+    }
+
+    darray_raw_sort(&array_p[0], size_of, length, int_compare);
+    assert(darray_raw_is_sorted(&array_p[0], size_of, length, int_compare) == true);
+
+    darray_raw_destroy(array_p);
+}
+
+
 static void test_darray_raw_shuffle(void)
 {
     register const size_t size_of = sizeof(int);
@@ -1524,6 +1555,30 @@ static void test_darray_raw_shuffle(void)
     for (size_t i = 0; i < length; ++i)
     {
         assert(histogram[i] == 1);
+    }
+
+    darray_raw_destroy(array_p);
+}
+
+
+static void test_darray_raw_reverse(void)
+{
+    register const size_t size_of = sizeof(int);
+    register const size_t length = 10;
+
+    int* array_p = darray_raw_create(size_of, length);
+    assert(array_p != NULL);
+
+    for (size_t i = 0; i < length; ++i)
+    {
+        array_p[i] = (int)i;
+    }
+
+    darray_raw_reverse(&array_p[0], size_of, length);
+
+    for (size_t i = 0; i < length; ++i)
+    {
+        assert(array_p[i] == (int)(length - i - 1));
     }
 
     darray_raw_destroy(array_p);
@@ -1614,7 +1669,9 @@ int main(void)
     test_darray_raw_unsorted_find_last();
     test_darray_raw_sorted_find_first();
     test_darray_raw_sorted_find_last();
+    test_darray_raw_sort();
     test_darray_raw_shuffle();
+    test_darray_raw_reverse();
     test_darray_raw_equal();
     test_darray_raw_is_sorted();
     test_darray_raw_is_reverse_sorted();

@@ -411,6 +411,20 @@ ssize_t darray_raw_sorted_find_last(const void* restrict array_p, size_t size_of
 
 
 /*
+ * Function sort @array_p. 
+ * Insertion-sort will be used for arrays with length smaller than 17 elements. For bigger arrays dual-pivot quick-sort will be used.
+ * 
+ * @param[in]  array_p - pointer to array.
+ * @param[in]  size_of - size of each array member.
+ * @param[in]  length  - number of elements in array.
+ * @param[in]  cmp_fp  - comparator function pointer.
+ * 
+ * @return: this is void function.
+ */
+void darray_raw_sort(void* array_p, size_t size_of, size_t length, const compare_fp cmp_fp);
+
+
+/*
  * Function shuffle @array_p.
  *
  * @param[in] array_p - pointer to array.
@@ -420,6 +434,18 @@ ssize_t darray_raw_sorted_find_last(const void* restrict array_p, size_t size_of
  * @return: this is void function.
  */
 void darray_raw_shuffle(void* array_p, size_t size_of, size_t length);
+
+
+/*
+ * Function reverse @array_p.
+ * 
+ * @param[in]  array_p - pointer to array.
+ * @param[in]  size_of - size of each array member.
+ * @param[in]  length  - number of elements in array.
+ * 
+ * @return: this is void function.
+ */
+void darray_raw_reverse(void* array_p, size_t size_of, size_t length);
 
 
 /*

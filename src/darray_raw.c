@@ -67,7 +67,7 @@ static inline int __darray_raw_insert_pos(void* const restrict array_p, const si
 
     if (pos >= length)
     {
-        perror("DArrayRaw: argument pos is greater than length value\n");
+        perror("DArrayRaw: argument pos is great_idxer than length value\n");
         return -1;
     }
 
@@ -121,7 +121,7 @@ static inline int __darray_raw_delete_pos(void* array_p, size_t size_of, size_t 
 
     if (pos >= length)
     {
-        perror("DArrayRaw: argument pos is greater than length value\n");
+        perror("DArrayRaw: argument pos is great_idxer than length value\n");
         return -1;
     }
 
@@ -172,7 +172,7 @@ static inline int __darray_raw_delete_pos_with_entry(void* array_p, size_t size_
 
     if (pos >= length)
     {
-        perror("DArrayRaw: argument pos is greater than length value\n");
+        perror("DArrayRaw: argument pos is great_idxer than length value\n");
         return -1;
     }
 
@@ -1055,6 +1055,238 @@ ssize_t darray_raw_sorted_find_last(const void* const restrict array_p, const si
 }
 
 
+void darray_raw_sort(void* const array_p, const size_t size_of, const size_t length, const compare_fp cmp_fp)
+{
+    if (array_p == NULL)
+    {
+        perror("DArrayRaw: argument array_p is NULL\n");
+        return;
+    }
+
+    if (size_of == 0)
+    {
+        perror("DArrayRaw: argument size_of has to small value\n");
+        return;
+    }
+
+    if (length == 0)
+    {
+        perror("DArrayRaw: argument length has to small value\n");
+        return;
+    }
+
+    if (cmp_fp == NULL)
+    {
+        perror("DArrayRaw: argument cmp_fp is NULL\n");
+        return;
+    }
+
+    register const size_t dist_size = 13;
+    register const size_t tiny_size = 17;
+
+    uint8_t* const barray_p = array_p;
+    register const size_t left_idx = 0;
+    register const size_t right_idx = length - 1;
+
+    if (length < tiny_size)
+    {
+        for (size_t i = left_idx + 1; i <= right_idx; ++i)
+        {
+            for (size_t j = i; j > left_idx && cmp_fp(&barray_p[j * size_of], &barray_p[(j - 1) * size_of]) < 0; j--)
+            {
+                swap(barray_p[j * size_of], barray_p[(j - 1) * size_of], size_of);
+            }
+        }
+
+        return;
+    }
+
+    register const size_t sixth = length / 6;
+    register const size_t m1 = left_idx + sixth;
+    register const size_t m2 = m1 + sixth;
+    register const size_t m3 = m2 + sixth;
+    register const size_t m4 = m3 + sixth;
+    register const size_t m5 = m4 + sixth;
+
+    if (cmp_fp(&barray_p[m1 * size_of], &barray_p[m2 * size_of]) > 0)
+    {
+        swap(barray_p[m1 * size_of], barray_p[m2 * size_of], size_of);
+    }
+
+    if (cmp_fp(&barray_p[m4 * size_of], &barray_p[m5 * size_of]) > 0)
+    {
+        swap(barray_p[m4 * size_of], barray_p[m5 * size_of], size_of);
+    }
+
+    if (cmp_fp(&barray_p[m1 * size_of], &barray_p[m3 * size_of]) > 0)
+    {
+        swap(barray_p[m1 * size_of], barray_p[m3 * size_of], size_of);
+    }
+
+    if (cmp_fp(&barray_p[m2 * size_of], &barray_p[m3 * size_of]) > 0)
+    {
+        swap(barray_p[m2 * size_of], barray_p[m3 * size_of], size_of);
+    }
+
+    if (cmp_fp(&barray_p[m1 * size_of], &barray_p[m4 * size_of]) > 0)
+    {
+        swap(barray_p[m1 * size_of], barray_p[m4 * size_of], size_of);
+    }
+
+    if (cmp_fp(&barray_p[m3 * size_of], &barray_p[m4 * size_of]) > 0)
+    {
+        swap(barray_p[m3 * size_of], barray_p[m4 * size_of], size_of);
+    }
+
+    if (cmp_fp(&barray_p[m2 * size_of], &barray_p[m5 * size_of]) > 0)
+    {
+        swap(barray_p[m2 * size_of], barray_p[m5 * size_of], size_of);
+    }
+
+    if (cmp_fp(&barray_p[m2 * size_of], &barray_p[m3 * size_of]) > 0)
+    {
+        swap(barray_p[m2 * size_of], barray_p[m3 * size_of], size_of);
+    }
+
+    if (cmp_fp(&barray_p[m4 * size_of], &barray_p[m5 * size_of]) > 0)
+    {
+        swap(barray_p[m4 * size_of], barray_p[m5 * size_of], size_of);
+    }
+
+    uint8_t first_pivot[size_of];
+    memcpy(&first_pivot[0], &barray_p[m2 * size_of], size_of);
+
+    uint8_t second_pivot[size_of];
+    memcpy(&second_pivot[0], &barray_p[m4 * size_of], size_of);
+
+    register const bool diff_pivots = cmp_fp(&first_pivot[0], &second_pivot[0]) != 0;
+
+    memcpy(&barray_p[m2 * size_of], &barray_p[left_idx * size_of], size_of);
+    memcpy(&barray_p[m4 * size_of], &barray_p[right_idx * size_of], size_of);
+
+    register size_t less_idx = left_idx + 1;
+    register size_t great_idx = right_idx - 1;
+
+    if (diff_pivots)
+    {
+        for (size_t k = less_idx; k <= great_idx; k++)
+        {
+            uint8_t tmp[size_of];
+            memcpy(&tmp[0], &barray_p[k * size_of], size_of);
+
+            if (cmp_fp(&tmp[0], &first_pivot[0]) < 0)
+            {
+                memcpy(&barray_p[k * size_of], &barray_p[less_idx * size_of], size_of);
+                memcpy(&barray_p[less_idx * size_of], &tmp[0], size_of);
+                less_idx++;
+            }
+            else if (cmp_fp(&tmp[0], &second_pivot[0]) > 0)
+            {
+                while (cmp_fp(&barray_p[great_idx * size_of], &second_pivot[0]) > 0 && k < great_idx)
+                {
+                    great_idx--;
+                }
+
+                memcpy(&barray_p[k * size_of], &barray_p[great_idx * size_of], size_of);
+                memcpy(&barray_p[great_idx * size_of], &tmp[0], size_of);
+                memcpy(&tmp[0], &barray_p[k * size_of], size_of);
+                great_idx--;
+
+                if (cmp_fp(&tmp[0], &first_pivot[0]) < 0)
+                {
+                    memcpy(&barray_p[k * size_of], &barray_p[less_idx * size_of], size_of);
+                    memcpy(&barray_p[less_idx * size_of], &tmp[0], size_of);
+                    less_idx++;
+                }
+            }
+        }
+    }
+    else
+    {
+        for (size_t k = less_idx; k <= great_idx; k++)
+        {
+            uint8_t tmp[size_of];
+            memcpy(&tmp[0], &barray_p[k * size_of], size_of);
+
+            if (cmp_fp(&tmp[0], &first_pivot[0]) == 0)
+            {
+                continue;
+            }
+
+            if (cmp_fp(&tmp[0], &first_pivot[0]) < 0)
+            {
+                memcpy(&barray_p[k * size_of], &barray_p[less_idx * size_of], size_of);
+                memcpy(&barray_p[less_idx * size_of], &tmp[0], size_of);
+                less_idx++;
+            }
+            else
+            {
+                while (cmp_fp(&barray_p[great_idx * size_of], &second_pivot[0]) > 0 && k < great_idx)
+                {
+                    great_idx--;
+                }
+
+                memcpy(&barray_p[k * size_of], &barray_p[great_idx * size_of], size_of);
+                memcpy(&barray_p[great_idx * size_of], &tmp[0], size_of);
+                memcpy(&tmp[0], &barray_p[k * size_of], size_of);
+                great_idx--;
+
+                if (cmp_fp(&tmp[0], &first_pivot[0]) < 0)
+                {
+                    memcpy(&barray_p[k * size_of], &barray_p[less_idx * size_of], size_of);
+                    memcpy(&barray_p[less_idx * size_of], &tmp[0], size_of);
+                    less_idx++;
+                }
+            }
+        }
+    }
+
+    memcpy(&barray_p[left_idx * size_of], &barray_p[(less_idx - 1) * size_of], size_of);
+    memcpy(&barray_p[(less_idx - 1) * size_of], &first_pivot[0], size_of);
+
+    memcpy(&barray_p[right_idx * size_of], &barray_p[(great_idx + 1) * size_of], size_of);
+    memcpy(&barray_p[(great_idx + 1) * size_of], &second_pivot[0], size_of);
+
+    darray_raw_sort(&barray_p[left_idx * size_of], size_of, less_idx - left_idx - 2 + 1, cmp_fp);
+    darray_raw_sort(&barray_p[(great_idx + 2) * size_of], size_of, right_idx - great_idx - 2 + 1, cmp_fp);
+
+    if (great_idx - less_idx > length - dist_size && diff_pivots)
+    {
+        for (size_t k = less_idx; k <= great_idx; k++)
+        {
+            uint8_t tmp[size_of];
+            memcpy(&tmp[0], &barray_p[k * size_of], size_of);
+
+            if (cmp_fp(&tmp[0], &first_pivot[0]) == 0)
+            {
+                memcpy(&barray_p[k * size_of], &barray_p[less_idx * size_of], size_of);
+                memcpy(&barray_p[less_idx * size_of], &tmp[0], size_of);
+                less_idx++;
+            }
+            else if (cmp_fp(&tmp[0], &second_pivot[0]) == 0)
+            {
+                memcpy(&barray_p[k * size_of], &barray_p[great_idx * size_of], size_of);
+                memcpy(&barray_p[great_idx * size_of], &tmp[0], size_of);
+                memcpy(&tmp[0], &barray_p[k * size_of], size_of);
+                great_idx--;
+
+                if (cmp_fp(&tmp[0], &first_pivot[0]) == 0)
+                {
+                    memcpy(&barray_p[k * size_of], &barray_p[less_idx * size_of], size_of);
+                    memcpy(&barray_p[less_idx * size_of], &tmp[0], size_of);
+                    less_idx++;
+                }
+            }
+        }
+    }
+
+    if (diff_pivots)
+    {
+        darray_raw_sort(&barray_p[less_idx * size_of], size_of, great_idx - less_idx + 1, cmp_fp);
+    }
+}
+
+
 void darray_raw_shuffle(void* const array_p, const size_t size_of, const size_t length)
 {
     if (array_p == NULL)
@@ -1085,6 +1317,35 @@ void darray_raw_shuffle(void* const array_p, const size_t size_of, const size_t 
         {
             swap(barray[i * size_of], barray[rand_nr * size_of], size_of);
         }
+    }
+}
+
+
+void darray_raw_reverse(void* const array_p, const size_t size_of, const size_t length)
+{
+    if (array_p == NULL)
+    {
+        perror("DArrayRaw: argument array_p is NULL\n");
+        return;
+    }
+
+    if (size_of == 0)
+    {
+        perror("DArrayRaw: argument size_of has to small value\n");
+        return;
+    }
+
+    if (length == 0)
+    {
+        perror("DArrayRaw: argument length has to small value\n");
+        return;
+    }
+
+    register uint8_t* const barray_p = array_p;
+
+    for (size_t offset = 0; offset < (length /2) * size_of; offset += size_of)
+    {
+        swap(barray_p[offset], barray_p[(length - 1) * size_of - offset], size_of);
     }
 }
 
