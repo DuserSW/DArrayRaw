@@ -84,9 +84,9 @@ C_WARN :=
 GGDB :=
 
 ifeq ($(CC),clang)
-	C_WARN += -Weverything -Wno-padded -Wno-vla
+	C_WARN += -Weverything -Wno-padded -Wno-vla -Wno-disabled-macro-expansion
 else ifneq (, $(filter $(CC), cc gcc))
-	C_OPT += -no-pie
+	C_OPT += -fPIC
 	C_WARN += -Wall -Wextra -pedantic -Wcast-align \
 			  -Winit-self -Wlogical-op -Wmissing-include-dirs \
 			  -Wredundant-decls -Wshadow -Wstrict-overflow=5 -Wundef  \

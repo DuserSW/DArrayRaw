@@ -120,6 +120,40 @@ static void test_darray_raw_create(void)
 }
 
 
+static void test_darray_raw_create_and_init(void)
+{
+    /* primitive type */
+    int* int_array_p = darray_raw_create_and_init(int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    assert(int_array_p != NULL);
+
+    for (size_t i = 0; i < 10; ++i)
+    {
+        assert(int_array_p[i] == (int)(i + 1));
+    }
+
+    free(int_array_p);
+
+    /* struct type */
+    MyStructS* struct_array_p = darray_raw_create_and_init(MyStructS, 
+                                                           { .key = 100, { .a = 1, .b = 2, .c = 3} }, 
+                                                           { .key = 200, { .a = 1, .b = 2, .c = 3} },
+                                                           { .key = 300, { .a = 1, .b = 2, .c = 3} });
+    assert(struct_array_p);
+
+    for (size_t i = 0; i < 3; ++i)
+    {
+        const size_t keys[] = {100, 200, 300};
+
+        assert(struct_array_p[i].key == keys[i]);
+        assert(struct_array_p[i].a == 1);
+        assert(struct_array_p[i].b == 2);
+        assert(struct_array_p[i].c == 3);
+    }
+
+    free(struct_array_p);
+}
+
+
 static void test_darray_raw_destroy(void)
 {
     register const size_t size_of = sizeof(int);
@@ -155,13 +189,8 @@ static void test_darray_raw_copy(void)
     register const size_t size_of = sizeof(int);
     register const size_t length = 10;
 
-    int* array_p = darray_raw_create(size_of, length);
+    int* array_p = darray_raw_create_and_init(int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     assert(array_p != NULL);
-
-    for (size_t i = 0; i < length; ++i)
-    {
-        array_p[i] = (int)(i + 1);
-    }
 
     int* array_copy_p = darray_raw_create(size_of, length);
     assert(array_copy_p != NULL);
@@ -189,13 +218,8 @@ static void test_darray_raw_clone(void)
     register const size_t size_of = sizeof(int);
     register const size_t length = 10;
 
-    int* array_p = darray_raw_create(size_of, length);
+    int* array_p = darray_raw_create_and_init(int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     assert(array_p != NULL);
-
-    for (size_t i = 0; i < length; ++i)
-    {
-        array_p[i] = (int)(i + 1);
-    }
 
     int* cloned_p = darray_raw_clone(array_p, size_of, length);
     assert(cloned_p != NULL);
@@ -213,13 +237,8 @@ static void test_darray_raw_move(void)
     register const size_t size_of = sizeof(int);
     register const size_t length = 10;
 
-    int* first_array_p = darray_raw_create(size_of, length);
+    int* first_array_p = darray_raw_create_and_init(int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     assert(first_array_p != NULL);
-
-    for (size_t i = 0; i < length; ++i)
-    {
-        first_array_p[i] = (int)(i + 1);
-    }
 
     int* second_array_p = darray_raw_create(size_of, length);
     assert(second_array_p != NULL);
@@ -252,13 +271,8 @@ static void test_darray_raw_zeros(void)
     register const size_t size_of = sizeof(int);
     register const size_t length = 10;
 
-    int* array_p = darray_raw_create(size_of, length);
+    int* array_p = darray_raw_create_and_init(int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     assert(array_p != NULL);
-
-    for (size_t i = 0; i < length; ++i)
-    {
-        array_p[i] = (int)(i + 1);
-    }
 
     register int ret = -1;
     
@@ -1530,13 +1544,8 @@ static void test_darray_raw_shuffle(void)
     register const size_t size_of = sizeof(int);
     enum { length = 10 };
 
-    int* array_p = darray_raw_create(size_of, length);
+    int* array_p = darray_raw_create_and_init(int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     assert(array_p != NULL);
-
-    for (size_t i = 0; i < length; ++i)
-    {
-        array_p[i] = (int)(i + 1);
-    }
 
     darray_raw_shuffle(array_p, size_of, length);
     
@@ -1566,19 +1575,14 @@ static void test_darray_raw_reverse(void)
     register const size_t size_of = sizeof(int);
     register const size_t length = 10;
 
-    int* array_p = darray_raw_create(size_of, length);
+    int* array_p = darray_raw_create_and_init(int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     assert(array_p != NULL);
-
-    for (size_t i = 0; i < length; ++i)
-    {
-        array_p[i] = (int)i;
-    }
 
     darray_raw_reverse(&array_p[0], size_of, length);
 
     for (size_t i = 0; i < length; ++i)
     {
-        assert(array_p[i] == (int)(length - i - 1));
+        assert(array_p[i] == (int)(length - i));
     }
 
     darray_raw_destroy(array_p);
@@ -1638,6 +1642,7 @@ static void test_darray_raw_is_reverse_sorted(void)
 int main(void)
 {
     test_darray_raw_create();
+    test_darray_raw_create_and_init();
     test_darray_raw_destroy();
     test_darray_raw_destroy_with_entires();
     test_darray_raw_copy();

@@ -2,6 +2,9 @@
 #define DARRAY_RAW_PRIV_COMMON_H
 
 
+#include "nargs.h"
+
+
 /*
     This is the private header for DArrayRaw library. Do not include it directly!
 
@@ -14,6 +17,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <stddef.h>
 
 
 /* typedef for comparator function */
@@ -73,6 +77,19 @@ typedef void (*destructor_fp)(void*);
         assign(first_addr_p, second_addr_p, size_of); \
         assign(second_addr_p, &vla[0], size_of); \
     } while (0)
+
+
+/*
+ * Function allocate memory for array on heap. New array will be filled by @array_p values.
+ * Function declaration has been moved to private header to hide it from user.
+ *
+ * @param[in] size_of - size of each array member.
+ * @param[in] length  - number of elements in array.
+ * @param[in] array_p - pointer to array which initialize new created array.
+ * 
+ * @return: allocated and initialized array on success, NULL on failure.
+ */
+void* darray_raw_create_and_init(size_t size_of, size_t length, const void* array_p);
 
 
 #endif /* DARRAY_RAW_PRIV_COMMON_H */

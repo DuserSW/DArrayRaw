@@ -231,6 +231,32 @@ void* darray_raw_create(size_t size_of, size_t length)
 }
 
 
+/* needed to be able to cover function by macro */
+#undef darray_raw_create_and_init
+
+void* darray_raw_create_and_init(const size_t size_of, const size_t length, const void* const array_p)
+{
+    void* new_array_p = darray_raw_create(size_of, length);
+
+    if (new_array_p == NULL)
+    {
+        perror("DArrayRaw: calloc error\n");
+        return NULL;
+    }
+
+    register const int ret = darray_raw_copy(new_array_p, array_p, size_of, length);
+
+    if (ret == -1)
+    {
+        perror("DArrayRaw: darray_raw_copy error\n");
+        darray_raw_destroy(new_array_p);
+        return NULL;
+    }
+
+    return new_array_p;
+}
+
+
 void darray_raw_destroy(void* array_p)
 {
     if (array_p == NULL)
@@ -279,7 +305,7 @@ void darray_raw_destroy_with_entires(void* array_p, const size_t size_of, const 
 }
 
 
-int darray_raw_copy(void* const restrict dst_array_p, void* const restrict src_array_p, const size_t size_of, const size_t length)
+int darray_raw_copy(void* const restrict dst_array_p, const void* const restrict src_array_p, const size_t size_of, const size_t length)
 {
     if (dst_array_p == NULL)
     {
@@ -311,7 +337,7 @@ int darray_raw_copy(void* const restrict dst_array_p, void* const restrict src_a
 }
 
 
-void* darray_raw_clone(void* const array_p, const size_t size_of, const size_t length)
+void* darray_raw_clone(const void* const array_p, const size_t size_of, const size_t length)
 {
     if (array_p == NULL)
     {
@@ -352,7 +378,7 @@ void* darray_raw_clone(void* const array_p, const size_t size_of, const size_t l
 }
 
 
-int darray_raw_move(void* const dst_array_p, void* const src_array_p, const size_t size_of, const size_t length)
+int darray_raw_move(void* const dst_array_p, const void* const src_array_p, const size_t size_of, const size_t length)
 {
     if (dst_array_p == NULL)
     {

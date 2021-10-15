@@ -15,14 +15,16 @@
 
 
     Main features - library is standalone and wrap or implement basic operation on arrays like:
-    * create/destroy.
+    * create (with initialization)/destroy with/without entries.
     * copy/clone/move/zeros/set_all.
-    * insert first/last/pos for unsorted arrays and insert for sorted arrays.
-    * delete first/last/pos with/without entry for arrays.
-    * check if array is sorted/reverse sorted/equals.
+    * insert first/last/pos with/without entries for unsorted arrays and insert for sorted arrays.
+    * delete first/last/pos/all with/without entry for arrays.
     * find lower/upper bound for sorted arrays.
     * find min/max for arrays.
     * find first/last for sorted/unsorted arrays.
+    * sort/shuffle/reverse arrays.
+    * check is arrays are equals.
+    * check if array is sorted/reverse sorted. 
 */
 
 
@@ -40,6 +42,18 @@
  * @return: allocated array on success, NULL on failure.
  */
 void* darray_raw_create(size_t size_of, size_t length);
+
+
+/*
+ * Function allocate memory for array on heap. By default array is zeros.
+ *
+ * @param[in] type - type of each of array member.
+ * @param[in] ...  - variadic arguments which initialize array.
+ * 
+ * @return: allocated and initialized array on success, NULL on failure.
+ */
+#define darray_raw_create_and_init(type, ...) \
+    darray_raw_create_and_init(sizeof(type), VA_ARGS_LENGTH(__VA_ARGS__), (type[VA_ARGS_LENGTH(__VA_ARGS__)]){__VA_ARGS__})
 
 
 /*
@@ -76,7 +90,7 @@ void darray_raw_destroy_with_entires(void* array_p, size_t size_of, size_t lengt
  * 
  * @return: 0 on success, non-zero value on failure.
  */
-int darray_raw_copy(void* restrict dst_array_p, void* restrict src_array_p, size_t size_of, size_t length);
+int darray_raw_copy(void* restrict dst_array_p, const void* restrict src_array_p, size_t size_of, size_t length);
 
 
 /*
@@ -88,7 +102,7 @@ int darray_raw_copy(void* restrict dst_array_p, void* restrict src_array_p, size
  * 
  * @return: cloned array on success, NULL on failure.
  */
-void* darray_raw_clone(void* array_p, size_t size_of, size_t length);
+void* darray_raw_clone(const void* array_p, size_t size_of, size_t length);
 
 
 /*
@@ -102,7 +116,7 @@ void* darray_raw_clone(void* array_p, size_t size_of, size_t length);
  * 
  * @return: 0 on success, non-zero value on failure.
  */
-int darray_raw_move(void* dst_array_p, void* src_array_p, size_t size_of, size_t length);
+int darray_raw_move(void* dst_array_p, const void* src_array_p, size_t size_of, size_t length);
 
 
 /*
